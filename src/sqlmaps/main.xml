@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="main">
+  
+  <!-- 카카오 알림톡 대상 조회 -->
+	<select id="selectStdtListKT_start" resultClass="hashmap" parameterClass="map">
+		SELECT C.NO AS curr_no
+			, C.CURRNAME AS curr_name
+			, C.BEGIN_DATE
+			, C.END_DATE
+			, CC1.NO 
+			, CC1.START_DATE
+			, CC1.END_DATE
+			, CC1.TRAIN_TIME
+			, CC1.REST_TIME
+			, CC2.CURR_CLASS_NO
+			, CC2.CLASS_NO 
+			, CC2.CLASS_TYPE 
+			, CC2.CLASS_TIME 
+			, CSC.NO AS stdt_no 
+			, CSC.STDT_STATUS
+			, CSAA.CONTENT
+			, CSAA.ATTDATE
+			, CS.NAME AS stdt_name
+			, CS.MOBILE AS mobile
+		FROM CURR C
+		LEFT OUTER JOIN CURR_CLASS CC1 ON C.NO = CC1.CURR_NO
+		LEFT OUTER JOIN CURR_CLASSTIME CC2 ON CC1.NO = CC2.CURR_CLASS_NO
+		LEFT OUTER JOIN CURR_STDT_CURR CSC ON C.NO = CSC.CURR_NO
+		LEFT OUTER JOIN CURR_STDT_ATT_DAY CSAA ON CSC.STDT_NO = CSAA.STDT_NO
+		LEFT OUTER JOIN CURR_STDT CS ON CSC.STDT_NO = CS.NO
+			WHERE CC2.CLASS_NO = 1
+			<![CDATA[
+			AND (DATEDIFF(DATE_FORMAT(NOW(),'%Y%m%d') , REPLACE(C.BEGIN_DATE, '. ', '')) +1) >= 0 
+			AND (DATEDIFF(DATE_FORMAT(NOW(),'%Y%m%d') , REPLACE(C.END_DATE, '. ', '')) ) <= 0
+			AND LEFT(CC1.START_DATE, 8) <= DATE_FORMAT(NOW(),'%Y%m%d')  
+			AND DATE_FORMAT(NOW(),'%Y%m%d') <= LEFT(CC1.END_DATE, 8) 
+			]]>
+			AND CSC.DEL_FLAG = 0
+			AND CC2.CLASS_TIME = #classtime_class_time#
+			AND (CSAA.ATTDATE = DATE_FORMAT(NOW(),'%Y%m%d') or  CSAA.ATTDATE IS NULL)
+	</select>
