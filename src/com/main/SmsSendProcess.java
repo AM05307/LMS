@@ -263,7 +263,7 @@ public class SmsSendProcess extends Thread
 	
 	
 	
-	//드림라인 카카오톡 알림톡 발송 
+	// 카카오톡 알림톡 발송 
 	private boolean sendKakaoTalk(String template_code, String content, String send_id, String stdt_name, String stdt_no, String curr_name, String receiverNum)
 	{
 		boolean isSuccess = false;
